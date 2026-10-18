@@ -1,0 +1,77 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1000" height="1760" viewBox="0 0 1000 1760" role="img" aria-labelledby="title desc">
+<title id="title">Wazuh AI-Augmented SOC workflow architecture</title>
+<desc id="desc">Wazuh alerts pass through integration scripts into n8n for webhook intake, normalization, deduplication, IOC enrichment, a scoring gate, AI analysis, routing, audit logging, Slack notifications, and Jira tickets.</desc>
+<defs>
+  <marker id="arrow" markerWidth="10" markerHeight="10" refX="8" refY="4" orient="auto" markerUnits="strokeWidth"><path d="M0,0 L8,4 L0,8 Z" fill="#475569"/></marker>
+  <filter id="shadow" x="-15%" y="-15%" width="130%" height="140%"><feDropShadow dx="0" dy="3" stdDeviation="3" flood-color="#64748b" flood-opacity=".16"/></filter>
+  <style>
+    .node{fill:#f0edff;stroke:#9275ef;stroke-width:2;filter:url(#shadow)}
+    .decision{fill:#f0edff;stroke:#9275ef;stroke-width:2;filter:url(#shadow)}
+    .txt{font-family:Arial,Helvetica,sans-serif;font-size:21px;fill:#263248;text-anchor:middle}
+    .small{font-size:17px;fill:#475569;text-anchor:middle;font-family:Arial,Helvetica,sans-serif}
+    .line{fill:none;stroke:#475569;stroke-width:2.4;stroke-linecap:round;stroke-linejoin:round;marker-end:url(#arrow)}
+    .plain{fill:none;stroke:#475569;stroke-width:2.4;stroke-linecap:round;stroke-linejoin:round}
+    .label{font-family:Arial,Helvetica,sans-serif;font-size:18px;fill:#334155;paint-order:normal;stroke:none}
+  </style>
+</defs>
+<rect width="1000" height="1760" fill="#ffffff"/>
+<!-- Sources before n8n -->
+<rect class="node" x="365" y="24" width="270" height="78" rx="3"/>
+<text class="txt" x="500" y="56"><tspan x="500">Wazuh</tspan><tspan x="500" dy="26">Alert Generated</tspan></text>
+<path class="line" d="M500 102 V145"/>
+<rect class="node" x="365" y="145" width="270" height="78" rx="3"/>
+<text class="txt" x="500" y="176"><tspan x="500">Integration Scripts</tspan><tspan x="500" dy="26">(Python)</tspan></text>
+<path class="line" d="M500 223 V300"/>
+<!-- n8n boundary -->
+<rect x="90" y="278" width="820" height="1448" rx="2" fill="#fffde7" fill-opacity=".82" stroke="#9275ef" stroke-width="2"/>
+<text x="500" y="306" font-family="Arial,Helvetica,sans-serif" font-size="22" fill="#334155" text-anchor="middle">n8n Workflow</text>
+<!-- Main spine -->
+<rect class="node" x="365" y="330" width="270" height="92" rx="3"/>
+<text class="txt" x="500" y="360"><tspan x="500">Webhook Trigger</tspan><tspan x="500" dy="25">/webhook/</tspan><tspan x="500" dy="24">wazuh-alert</tspan></text>
+<path class="line" d="M500 422 V462"/>
+<rect class="node" x="365" y="462" width="270" height="68" rx="3"/>
+<text class="txt" x="500" y="504">Normalization</text>
+<path class="line" d="M500 530 V570"/>
+<rect class="node" x="365" y="570" width="270" height="68" rx="3"/>
+<text class="txt" x="500" y="612">Deduplication</text>
+<!-- Deduplication split: yes to audit, no onward -->
+<path class="plain" d="M500 638 V665"/>
+<circle cx="500" cy="665" r="4" fill="#475569"/>
+<path class="line" d="M500 665 H245 V1504"/>
+<text class="label" x="274" y="690">Yes — duplicate</text>
+<path class="line" d="M500 665 V710"/>
+<text class="label" x="520" y="692">No — continue</text>
+<rect class="node" x="365" y="710" width="270" height="96" rx="3"/>
+<text class="txt" x="500" y="746"><tspan x="500">IOC Enrichment</tspan><tspan x="500" dy="26">VirusTotal +</tspan><tspan x="500" dy="24">AbuseIPDB</tspan></text>
+<path class="line" d="M500 806 V846"/>
+<!-- Gate -->
+<polygon class="decision" points="500,846 610,916 500,986 390,916"/>
+<text class="txt" x="500" y="923">Gate</text>
+<!-- Gate lower-score route to audit; higher-score route to analyst -->
+<path class="line" d="M390 916 H320 V1504 H245"/>
+<text class="label" x="300" y="955">Below threshold</text>
+<path class="line" d="M610 916 H685 V1030"/>
+<text class="label" x="700" y="955">Meets threshold</text>
+<rect class="node" x="555" y="1030" width="260" height="94" rx="3"/>
+<text class="txt" x="685" y="1068"><tspan x="685">AI Analyst</tspan><tspan x="685" dy="27" font-size="17">LLM verdict + context</tspan></text>
+<path class="line" d="M685 1124 V1170"/>
+<!-- Routing decision -->
+<polygon class="decision" points="685,1170 795,1240 685,1310 575,1240"/>
+<text class="txt" x="685" y="1247">Routing</text>
+<!-- Route to audit and notifications/ticket -->
+<path class="line" d="M575 1240 H455 V1504 H340"/>
+<text class="label" x="455" y="1270">Audit / log</text>
+<path class="line" d="M795 1240 H845 V1385"/>
+<text class="label" x="833" y="1280">Notify / ticket</text>
+<!-- Audit endpoint -->
+<rect class="node" x="145" y="1504" width="300" height="78" rx="3"/>
+<text class="txt" x="295" y="1551">Audited / Logged</text>
+<!-- Outputs -->
+<path class="plain" d="M845 1385 V1410 H665 V1440"/>
+<path class="line" d="M845 1410 H835 V1440"/>
+<rect class="node" x="515" y="1440" width="250" height="92" rx="3"/>
+<text class="txt" x="640" y="1478"><tspan x="640">Slack</tspan><tspan x="640" dy="26">Notification</tspan></text>
+<rect class="node" x="790" y="1440" width="100" height="92" rx="3"/>
+<text class="txt" x="840" y="1478"><tspan x="840">Jira</tspan><tspan x="840" dy="26">Ticket</tspan></text>
+<text class="small" x="500" y="1688">Alert intake → deduplication → enrichment → gate → AI analysis → routing</text>
+</svg>

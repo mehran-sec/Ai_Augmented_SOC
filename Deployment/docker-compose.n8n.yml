@@ -1,0 +1,18 @@
+# n8n only. Wazuh runs natively on the host and reaches n8n at http://127.0.0.1:5678
+services:
+  n8n:
+    image: docker.n8n.io/n8nio/n8n:2.32.7        # pinned; bump deliberately, not via :latest
+    container_name: n8n
+    restart: unless-stopped
+    ports:
+      - "127.0.0.1:5678:5678"                    # loopback only: nothing off-host can reach the webhook
+    environment:
+      N8N_HOST: localhost
+      N8N_PORT: 5678
+      N8N_PROTOCOL: http
+      GENERIC_TIMEZONE: Asia/Karachi
+      TZ: Asia/Karachi
+      NODE_FUNCTION_ALLOW_BUILTIN: crypto        # required by the Dedup node
+      N8N_CONCURRENCY_PRODUCTION_LIMIT: 2        # bursts queue instead of racing (dedup state, API rate limits)
+    volumes:
+      - ./n8n_data:/home/node/.n8n
